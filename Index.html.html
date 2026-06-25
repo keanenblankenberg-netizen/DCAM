@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DCAM — Document Capture & Management</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink:       #1a1a2e;
+  --paper:     #f5f0e8;
+  --cream:     #ede8dc;
+  --ruled:     #d4cfc4;
+  --accent:    #2d6a4f;
+  --accent2:   #b5451b;
+  --gold:      #c9a84c;
+  --muted:     #7a7468;
+  --surface:   #faf7f2;
+  --border:    #ccc8be;
+  --danger:    #b5451b;
+  --shadow:    rgba(26,26,46,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 58px;
+  gap: 16px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+.logo-sub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #9998aa;
+  margin-top: 1px;
+}
+header .spacer { flex: 1; }
+.header-stats {
+  display: flex;
+  gap: 24px;
+}
+.hstat {
+  text-align: center;
+}
+.hstat .val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gold);
+}
+.hstat .lbl {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9998aa;
+}
+
+/* ── LAYOUT ── */
+.app { display: flex; height: calc(100vh - 58px); overflow: hidden; }
+
+/* ── SIDEBAR ── */
+aside {
+  width: 240px;
+  min-width: 240px;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  border-right: 3px solid var(--gold);
+  overflow-y: auto;
+}
+.sidebar-top {
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid #2a2a3e;
+}
+.sidebar-search {
+  width: 100%;
+  background: #2a2a3e;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  padding: 8px 12px;
+  outline: none;
+}
+.sidebar-search::placeholder { color: #6668aa; }
+.sidebar-search:focus { border-color: var(--gold); }
+
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-section-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #6668aa;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #9998aa;
+  font-size: 13px;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+}
+.nav-item:hover { background: #2a2a3e; color: var(--paper); }
+.nav-item.active { background: #1e3a2e; color: #6fcf97; border-color: #2d6a4f; }
+.nav-item .icon { font-size: 15px; }
+.nav-badge {
+  margin-left: auto;
+  background: #2a2a3e;
+  color: var(--gold);
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+/* ── MAIN ── */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  background: var(--paper);
+  border-bottom: 2px solid var(--ruled);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 7px 16px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--cream); border-color: var(--ink); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: #225a3f; }
+.btn.gold { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 600; }
+.btn.gold:hover { background: #b8963e; }
+.btn.danger { border-color: var(--danger); color: var(--danger); }
+.btn.danger:hover { background: #fdf0ec; }
+.tb-sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* ── LEDGER ── */
+.ledger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.ledger-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--ink);
+}
+.ledger-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.ledger-table-wrap {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow);
+  /* Ledger lines effect */
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 39px,
+    var(--ruled) 39px,
+    var(--ruled) 40px
+  );
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead tr {
+  background: var(--ink);
+}
+th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid var(--ruled);
+  transition: background 0.1s;
+  background: transparent;
+}
+tbody tr:hover { background: rgba(45,106,79,0.06); }
+tbody tr:nth-child(even) { background: rgba(0,0,0,0.015); }
+tbody tr:nth-child(even):hover { background: rgba(45,106,79,0.06); }
+td {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  vertical-align: middle;
+}
+td.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-captured { background: #e6f4ee; color: var(--accent); border: 1px solid #b7dfc9; }
+.status-pending  { background: #fff8e6; color: #996600; border: 1px solid #f0d080; }
+.status-verified { background: #e8f0fe; color: #1a56b0; border: 1px solid #b0c8f8; }
+
+.row-actions { display: flex; gap: 5px; }
+.icon-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 3px 8px;
+  font-size: 12px;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.icon-btn:hover { background: var(--cream); border-color: var(--border); color: var(--ink); }
+.icon-btn.del:hover { color: var(--danger); border-color: var(--danger); background: #fdf0ec; }
+
+/* ── CAMERA PANEL ── */
+.camera-panel {
+  background: var(--ink);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: var(--paper);
+}
+.camera-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.camera-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+#camera-preview {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #000;
+  border-radius: 6px;
+  border: 2px solid #2a2a3e;
+  object-fit: cover;
+}
+.camera-controls { display: flex; flex-direction: column; gap: 10px; }
+.ctrl-group { }
+.ctrl-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9998aa;
+  margin-bottom: 4px;
+}
+.ctrl-row { display: flex; gap: 8px; align-items: center; }
+input[type=range] {
+  flex: 1;
+  accent-color: var(--gold);
+  height: 4px;
+}
+.ctrl-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  min-width: 32px;
+  text-align: right;
+}
+.wb-swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.wb-swatch {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #3a3a5e;
+  color: #9998aa;
+  background: #2a2a3e;
+  transition: all 0.15s;
+}
+.wb-swatch.active { border-color: var(--gold); color: var(--gold); }
+.camera-btn-row { display: flex; gap: 8px; margin-top: 8px; }
+
+/* ── OCR PANEL ── */
+.ocr-panel {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.ocr-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.ocr-result {
+  width: 100%;
+  min-height: 80px;
+  background: var(--cream);
+  border: 1px solid var(--ruled);
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  resize: vertical;
+  outline: none;
+}
+.ocr-result:focus { border-color: var(--accent); }
+.lang-select {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+}
+.lang-select:focus { border-color: var(--accent); }
+
+/* ── CAPTURE FORM ── */
+.capture-form {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  margin-bottom: 16px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ruled);
+  padding-bottom: 10px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row { margin-bottom: 0; }
+.form-row.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin-bottom: 5px;
+  display: block;
+}
+input[type=text], input[type=date], select.form-select, textarea.form-textarea {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 8px 11px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input[type=text]:focus, input[type=date]:focus,
+select.form-select:focus, textarea.form-textarea:focus {
+  border-color: var(--accent);
+}
+textarea.form-textarea { resize: vertical; min-height: 60px; }
+select.form-select option { background: var(--paper); }
+
+/* ── STATS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 1px 4px var(--shadow);
+  border-left: 3px solid var(--gold);
+}
+.stat-card .lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.stat-card .val {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--ink);
+}
+.stat-card .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty .icon { font-size: 40px; margin-bottom: 12px; }
+.empty p { font-size: 13px; }
+
+/* ── MODAL ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(26,26,46,0.55);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.show { display: flex; }
+.modal {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 520px;
+  max-width: 95vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 8px 32px var(--shadow);
+}
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  margin-bottom: 18px;
+  color: var(--ink);
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 10px;
+}
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  border-left: 3px solid var(--gold);
+  box-shadow: 0 4px 16px var(--shadow);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── IMPORT/EXPORT ── */
+.backup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.backup-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.backup-card .icon { font-size: 28px; margin-bottom: 10px; }
+.backup-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.backup-card p { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--ruled); border-radius: 3px; }
+
+@media (max-width: 700px) {
+  aside { display: none; }
+  .camera-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .backup-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo-text">DCAM</div>
+    <div class="logo-sub">Document Capture & Management</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="header-stats">
+    <div class="hstat"><div class="val" id="h-total">0</div><div class="lbl">Records</div></div>
+    <div class="hstat"><div class="val" id="h-today">0</div><div class="lbl">Today</div></div>
+    <div class="hstat"><div class="val" id="h-pending">0</div><div class="lbl">Pending</div></div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-top">
+      <input class="sidebar-search" type="text" placeholder="🔍  Search regiment no…" id="sidebar-search" oninput="sidebarSearch(this.value)"/>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Navigation</div>
+      <div class="nav-item active" id="nav-ledger" onclick="showView('ledger')">
+        <span class="icon">📖</span> Ledger
+        <span class="nav-badge" id="badge-ledger">0</span>
+      </div>
+      <div class="nav-item" id="nav-capture" onclick="showView('capture')">
+        <span class="icon">📷</span> Capture
+      </div>
+      <div class="nav-item" id="nav-backup" onclick="showView('backup')">
+        <span class="icon">💾</span> Backup
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Filter by Status</div>
+      <div class="nav-item" onclick="filterStatus('all')" id="filter-all">
+        <span class="icon">📋</span> All Records
+      </div>
+      <div class="nav-item" onclick="filterStatus('Captured')" id="filter-captured">
+        <span class="icon">✅</span> Captured
+      </div>
+      <div class="nav-item" onclick="filterStatus('Pending')" id="filter-pending">
+        <span class="icon">⏳</span> Pending
+      </div>
+      <div class="nav-item" onclick="filterStatus('Verified')" id="filter-verified">
+        <span class="icon">🔵</span> Verified
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="toolbar">
+      <button class="btn gold" onclick="showView('capture')">+ New Capture</button>
+      <button class="btn primary" onclick="openSearch()">🔍 Search</button>
+      <div class="tb-sep"></div>
+      <button class="btn" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn" onclick="showView('backup')">💾 Backup</button>
+    </div>
+
+    <div class="content" id="main-content"></div>
+  </main>
+</div>
+
+<!-- VIEW RECORD MODAL -->
+<div class="overlay" id="modal-view">
+  <div class="modal">
+    <div class="modal-title">📄 Record Details</div>
+    <div id="view-content"></div>
+    <div class="modal-actions">
+      <button class="btn danger" id="view-delete-btn">Delete</button>
+      <button class="btn primary" id="view-edit-btn">Edit</button>
+      <button class="btn" onclick="closeModal('modal-view')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">✏ Edit Record</div>
+    <div id="edit-content"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-edit')">Cancel</button>
+      <button class="btn primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="overlay" id="modal-search">
+  <div class="modal">
+    <div class="modal-title">🔍 Search Records</div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label class="form-label">Regiment Number</label>
+      <input type="text" id="search-regno" placeholder="e.g. R00123"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label class="form-label">Full Name</label>
+      <input type="text" id="search-name" placeholder="e.g. Dlamini"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label class="form-label">Document Type</label>
+      <select class="form-select" id="search-type">
+        <option value="">All Types</option>
+        <option>ID Document</option>
+        <option>Payslip</option>
+        <option>Form</option>
+        <option>Certificate</option>
+        <option>Contract</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-search')">Cancel</button>
+      <button class="btn primary" onclick="runSearch()">Search</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+let records = [];
+let filteredRecords = [];
+let currentView = 'ledger';
+let currentFilter = 'all';
+let editIndex = null;
+let stream = null;
+let wb = 'auto';
+
+// ── STORAGE ──
+function save() {
+  try { localStorage.setItem('dcam_records', JSON.stringify(records)); } catch(e){}
+}
+function load() {
+  try {
+    const d = localStorage.getItem('dcam_records');
+    if(d) records = JSON.parse(d);
+  } catch(e){ records = []; }
+  if(!records.length) seedData();
+  applyFilter();
+}
+function seedData() {
+  records = [
+    { id: genId(), regno:'R00101', name:'Thabo Nkosi', doctype:'ID Document', date:'2025-01-10', status:'Verified', notes:'Clear scan, verified against HR file.', ocr:'Identity Number: 8501015800083\nSurname: Nkosi\nNames: Thabo Emmanuel', captured: new Date('2025-01-10').toISOString() },
+    { id: genId(), regno:'R00102', name:'Alice Dlamini', doctype:'Payslip', date:'2025-01-15', status:'Captured', notes:'March 2025 payslip', ocr:'Employee: Alice Dlamini\nGross: R18 500.00\nNet: R14 230.00', captured: new Date('2025-01-15').toISOString() },
+    { id: genId(), regno:'R00103', name:'Sipho Mokoena', doctype:'Form', date:'2025-02-01', status:'Pending', notes:'Waiting supervisor sign-off', ocr:'', captured: new Date('2025-02-01').toISOString() },
+    { id: genId(), regno:'R00104', name:'Keanen Blankenberg', doctype:'Contract', date:'2025-02-10', status:'Captured', notes:'Fixed term contract GL Digital Trading', ocr:'Contract of Employment\nEmployee: Keanen Blankenberg\nStart Date: 01 November 2024', captured: new Date('2025-02-10').toISOString() },
+  ];
+  save();
+}
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ── FILTER ──
+function applyFilter() {
+  let base = [...records];
+  if(currentFilter !== 'all') base = base.filter(r => r.status === currentFilter);
+  filteredRecords = base;
+  updateStats();
+  updateBadges();
+}
+function filterStatus(s) {
+  currentFilter = s;
+  applyFilter();
+  showView('ledger');
+}
+function updateStats() {
+  document.getElementById('h-total').textContent = records.length;
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('h-today').textContent = records.filter(r=>r.date===today).length;
+  document.getElementById('h-pending').textContent = records.filter(r=>r.status==='Pending').length;
+}
+function updateBadges() {
+  document.getElementById('badge-ledger').textContent = filteredRecords.length;
+}
+
+// ── VIEWS ──
+function showView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('nav-'+view);
+  if(el) el.classList.add('active');
+  const c = document.getElementById('main-content');
+  if(view==='ledger') renderLedger(c);
+  else if(view==='capture') renderCapture(c);
+  else if(view==='backup') renderBackup(c);
+}
+
+// ── LEDGER ──
+function renderLedger(c) {
+  const label = currentFilter==='all'?'All Records':`${currentFilter} Records`;
+  let html = `
+  <div class="stats-grid">
+    <div class="stat-card"><div class="lbl">Total Records</div><div class="val">${records.length}</div><div class="sub">in database</div></div>
+    <div class="stat-card"><div class="lbl">Captured</div><div class="val">${records.filter(r=>r.status==='Captured').length}</div><div class="sub">documents</div></div>
+    <div class="stat-card"><div class="lbl">Pending</div><div class="val">${records.filter(r=>r.status==='Pending').length}</div><div class="sub">awaiting action</div></div>
+    <div class="stat-card"><div class="lbl">Verified</div><div class="val">${records.filter(r=>r.status==='Verified').length}</div><div class="sub">confirmed</div></div>
+  </div>
+  <div class="ledger-header">
+    <div>
+      <div class="ledger-title">📖 Document Ledger</div>
+      <div class="ledger-subtitle">${label} · ${filteredRecords.length} entr${filteredRecords.length===1?'y':'ies'}</div>
+    </div>
+  </div>
+  <div class="ledger-table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th>
+        <th>Regiment No.</th>
+        <th>Full Name</th>
+        <th>Document Type</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>`;
+
+  if(!filteredRecords.length) {
+    html += `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">No records found.</td></tr>`;
+  } else {
+    filteredRecords.forEach((r,i) => {
+      const globalIdx = records.indexOf(r);
+      html += `<tr>
+        <td class="mono">${String(i+1).padStart(3,'0')}</td>
+        <td class="mono">${r.regno}</td>
+        <td>${r.name}</td>
+        <td>${r.doctype}</td>
+        <td>${r.date}</td>
+        <td><span class="status-badge status-${r.status.toLowerCase()}">${r.status}</span></td>
+        <td><div class="row-actions">
+          <button class="icon-btn" onclick="viewRecord(${globalIdx})">👁</button>
+          <button class="icon-btn" onclick="editRecord(${globalIdx})">✏</button>
+          <button class="icon-btn del" onclick="deleteRecord(${globalIdx})">✕</button>
+        </div></td>
+      </tr>`;
+    });
+  }
+  html += `</tbody></table></div>`;
+  c.innerHTML = html;
+}
+
+// ── CAPTURE ──
+function renderCapture(c) {
+  c.innerHTML = `
+  <div class="camera-panel">
+    <div class="camera-title">📷 Camera Capture</div>
+    <div class="camera-grid">
+      <div>
+        <video id="camera-preview" autoplay playsinline muted></video>
+        <canvas id="snap-canvas" style="display:none;"></canvas>
+      </div>
+      <div class="camera-controls">
+        <div class="ctrl-group">
+          <div class="ctrl-label">White Balance</div>
+          <div class="wb-swatches">
+            ${['Auto','Daylight','Cloudy','Fluorescent','Tungsten'].map(w=>`
+              <div class="wb-swatch ${wb===w.toLowerCase()?'active':''}" onclick="setWB('${w.toLowerCase()}','${w}')">${w}</div>`).join('')}
+          </div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Brightness <span class="ctrl-val" id="val-bright">100</span></div>
+          <div class="ctrl-row">
+            <input type="range" min="50" max="200" value="100" id="sl-bright" oninput="updateFilter()"/>
+          </div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Contrast <span class="ctrl-val" id="val-contrast">100</span></div>
+          <div class="ctrl-row">
+            <input type="range" min="50" max="200" value="100" id="sl-contrast" oninput="updateFilter()"/>
+          </div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Saturation <span class="ctrl-val" id="val-sat">100</span></div>
+          <div class="ctrl-row">
+            <input type="range" min="0" max="200" value="100" id="sl-sat" oninput="updateFilter()"/>
+          </div>
+        </div>
+        <div class="camera-btn-row">
+          <button class="btn primary" onclick="startCamera()">📷 Start Camera</button>
+          <button class="btn gold" onclick="capturePhoto()">⚡ Snap</button>
+          <button class="btn" onclick="stopCamera()">■ Stop</button>
+        </div>
+      </div>
+    </div>
+    <div id="snap-preview" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="ocr-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div class="ocr-title">OCR — Text Recognition</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select class="lang-select" id="ocr-lang">
+          <option value="eng">English</option>
+          <option value="afr">Afrikaans</option>
+          <option value="fra">French</option>
+          <option value="deu">German</option>
+          <option value="por">Portuguese</option>
+          <option value="spa">Spanish</option>
+          <option value="zul">Zulu</option>
+          <option value="xho">Xhosa</option>
+          <option value="sot">Sotho</option>
+          <option value="tsn">Tswana</option>
+          <option value="nso">Northern Sotho</option>
+          <option value="ven">Venda</option>
+          <option value="tso">Tsonga</option>
+          <option value="ssw">Swati</option>
+          <option value="nbl">Ndebele</option>
+        </select>
+        <button class="btn primary" onclick="runOCR()">▶ Run OCR</button>
+      </div>
+    </div>
+    <textarea class="ocr-result" id="ocr-output" placeholder="OCR extracted text will appear here. Snap a document image first, then click Run OCR."></textarea>
+  </div>
+
+  <div class="capture-form">
+    <div class="form-title">📋 Document Details</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label class="form-label">Regiment Number *</label>
+        <input type="text" id="f-regno" placeholder="R00001"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Full Name *</label>
+        <input type="text" id="f-name" placeholder="Surname, First Name"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Document Type *</label>
+        <select class="form-select" id="f-doctype">
+          <option>ID Document</option>
+          <option>Payslip</option>
+          <option>Form</option>
+          <option>Certificate</option>
+          <option>Contract</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Capture Date</label>
+        <input type="date" id="f-date" value="${new Date().toISOString().slice(0,10)}"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="f-status">
+          <option>Captured</option>
+          <option>Pending</option>
+          <option>Verified</option>
+        </select>
+      </div>
+      <div class="form-row full">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="f-notes" placeholder="Additional notes…"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn gold" onclick="saveCapture()">💾 Save Record</button>
+      <button class="btn" onclick="clearForm()">Clear</button>
+    </div>
+  </div>`;
+}
+
+// ── CAMERA ──
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment' }, audio: false });
+    document.getElementById('camera-preview').srcObject = stream;
+    toast('Camera started');
+  } catch(e) {
+    toast('Camera not available — using demo mode');
+  }
+}
+function stopCamera() {
+  if(stream) { stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  toast('Camera stopped');
+}
+function capturePhoto() {
+  const video = document.getElementById('camera-preview');
+  const canvas = document.getElementById('snap-canvas');
+  if(!stream) { toast('Start camera first'); return; }
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  ctx.filter = buildFilter();
+  ctx.drawImage(video, 0, 0);
+  const dataUrl = canvas.toDataURL('image/jpeg');
+  document.getElementById('snap-preview').innerHTML =
+    `<img src="${dataUrl}" style="max-width:100%;border-radius:6px;border:2px solid var(--gold);margin-top:8px;" id="snapped-img"/>`;
+  toast('Photo captured');
+}
+function buildFilter() {
+  const b = document.getElementById('sl-bright')?.value || 100;
+  const c = document.getElementById('sl-contrast')?.value || 100;
+  const s = document.getElementById('sl-sat')?.value || 100;
+  const wbMap = { auto:'', daylight:'sepia(0.05)', cloudy:'sepia(0.1) hue-rotate(10deg)', fluorescent:'hue-rotate(-10deg)', tungsten:'sepia(0.2) hue-rotate(-15deg)' };
+  return `brightness(${b}%) contrast(${c}%) saturate(${s}%) ${wbMap[wb]||''}`;
+}
+function updateFilter() {
+  const b = document.getElementById('sl-bright').value;
+  const c = document.getElementById('sl-contrast').value;
+  const s = document.getElementById('sl-sat').value;
+  document.getElementById('val-bright').textContent = b;
+  document.getElementById('val-contrast').textContent = c;
+  document.getElementById('val-sat').textContent = s;
+  const v = document.getElementById('camera-preview');
+  if(v) v.style.filter = buildFilter();
+}
+function setWB(key, label) {
+  wb = key;
+  document.querySelectorAll('.wb-swatch').forEach(s=>s.classList.remove('active'));
+  event.target.classList.add('active');
+  updateFilter();
+  toast(`White balance: ${label}`);
+}
+
+// ── OCR ──
+async function runOCR() {
+  const img = document.getElementById('snapped-img');
+  const out = document.getElementById('ocr-output');
+  if(!img) { toast('Snap a photo first'); return; }
+  out.value = 'Processing OCR…';
+  // Simulate OCR (Tesseract.js would be loaded externally in production)
+  await new Promise(r=>setTimeout(r,1200));
+  const lang = document.getElementById('ocr-lang').value;
+  const samples = {
+    eng: 'Identity Number: 8501015800083\nSurname: NKOSI\nNames: THABO EMMANUEL\nDate of Birth: 01 January 1985\nSex: Male\nCountry of Birth: RSA',
+    afr: 'Identiteitsnommer: 8501015800083\nVan: VAN DER MERWE\nName: PIETER JOHANNES\nGeboortedatum: 01 Januarie 1985\nGeslag: Manlik',
+    zul: 'Inombolo Kamazisi: 8501015800083\nIsibongo: DLAMINI\nAmagama: SIPHO BONGANI',
+  };
+  out.value = samples[lang] || samples['eng'];
+  // Pipe OCR to notes field
+  const notesField = document.getElementById('f-notes');
+  if(notesField && !notesField.value) notesField.value = out.value;
+  toast('OCR complete');
+}
+
+// ── SAVE ──
+function saveCapture() {
+  const regno = document.getElementById('f-regno').value.trim();
+  const name = document.getElementById('f-name').value.trim();
+  if(!regno || !name) { toast('Regiment number and name are required'); return; }
+  const record = {
+    id: genId(),
+    regno,
+    name,
+    doctype: document.getElementById('f-doctype').value,
+    date: document.getElementById('f-date').value,
+    status: document.getElementById('f-status').value,
+    notes: document.getElementById('f-notes').value,
+    ocr: document.getElementById('ocr-output')?.value || '',
+    captured: new Date().toISOString()
+  };
+  records.unshift(record);
+  save();
+  applyFilter();
+  clearForm();
+  toast('Record saved successfully');
+  setTimeout(()=>showView('ledger'), 800);
+}
+function clearForm() {
+  ['f-regno','f-name','f-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const ocr = document.getElementById('ocr-output'); if(ocr) ocr.value='';
+  const snap = document.getElementById('snap-preview'); if(snap) snap.innerHTML='';
+}
+
+// ── VIEW / EDIT / DELETE ──
+function viewRecord(idx) {
+  const r = records[idx];
+  document.getElementById('view-content').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;">
+      ${[['Regiment No.',r.regno],['Full Name',r.name],['Document Type',r.doctype],['Date',r.date],['Status',`<span class="status-badge status-${r.status.toLowerCase()}">${r.status}</span>`],['Notes',r.notes||'—']].map(([k,v])=>`
+        <tr style="border-bottom:1px solid var(--ruled);">
+          <td style="padding:10px 0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);width:130px;">${k}</td>
+          <td style="padding:10px 0;font-size:13px;">${v}</td>
+        </tr>`).join('')}
+      ${r.ocr?`<tr><td style="padding:10px 0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);vertical-align:top;">OCR Text</td><td style="padding:10px 0;font-size:12px;font-family:'JetBrains Mono',monospace;white-space:pre-wrap;color:var(--accent);">${r.ocr}</td></tr>`:''}
+    </table>`;
+  document.getElementById('view-delete-btn').onclick = ()=>{ deleteRecord(idx); closeModal('modal-view'); };
+  document.getElementById('view-edit-btn').onclick = ()=>{ closeModal('modal-view'); editRecord(idx); };
+  document.getElementById('modal-view').classList.add('show');
+}
+
+function editRecord(idx) {
+  editIndex = idx;
+  const r = records[idx];
+  document.getElementById('edit-content').innerHTML = `
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Regiment No.</label><input type="text" id="e-regno" value="${r.regno}"/></div>
+      <div class="form-row"><label class="form-label">Full Name</label><input type="text" id="e-name" value="${r.name}"/></div>
+      <div class="form-row"><label class="form-label">Document Type</label>
+        <select class="form-select" id="e-doctype">
+          ${['ID Document','Payslip','Form','Certificate','Contract','Other'].map(t=>`<option ${r.doctype===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row"><label class="form-label">Date</label><input type="date" id="e-date" value="${r.date}"/></div>
+      <div class="form-row"><label class="form-label">Status</label>
+        <select class="form-select" id="e-status">
+          ${['Captured','Pending','Verified'].map(s=>`<option ${r.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row full"><label class="form-label">Notes</label><textarea class="form-textarea" id="e-notes">${r.notes||''}</textarea></div>
+    </div>`;
+  document.getElementById('modal-edit').classList.add('show');
+}
+
+function saveEdit() {
+  const r = records[editIndex];
+  r.regno = document.getElementById('e-regno').value.trim();
+  r.name = document.getElementById('e-name').value.trim();
+  r.doctype = document.getElementById('e-doctype').value;
+  r.date = document.getElementById('e-date').value;
+  r.status = document.getElementById('e-status').value;
+  r.notes = document.getElementById('e-notes').value;
+  save();
+  applyFilter();
+  closeModal('modal-edit');
+  showView('ledger');
+  toast('Record updated');
+}
+
+function deleteRecord(idx) {
+  if(!confirm(`Delete record for ${records[idx].name}?`)) return;
+  records.splice(idx,1);
+  save();
+  applyFilter();
+  showView('ledger');
+  toast('Record deleted');
+}
+
+// ── SEARCH ──
+function openSearch() { document.getElementById('modal-search').classList.add('show'); }
+function sidebarSearch(val) {
+  if(!val.trim()) { applyFilter(); showView('ledger'); return; }
+  filteredRecords = records.filter(r =>
+    r.regno.toLowerCase().includes(val.toLowerCase()) ||
+    r.name.toLowerCase().includes(val.toLowerCase())
+  );
+  updateBadges();
+  showView('ledger');
+}
+function runSearch() {
+  const regno = document.getElementById('search-regno').value.trim().toLowerCase();
+  const name = document.getElementById('search-name').value.trim().toLowerCase();
+  const type = document.getElementById('search-type').value;
+  filteredRecords = records.filter(r => {
+    if(regno && !r.regno.toLowerCase().includes(regno)) return false;
+    if(name && !r.name.toLowerCase().includes(name)) return false;
+    if(type && r.doctype !== type) return false;
+    return true;
+  });
+  updateBadges();
+  closeModal('modal-search');
+  showView('ledger');
+  toast(`${filteredRecords.length} result(s) found`);
+}
+
+// ── BACKUP ──
+function renderBackup(c) {
+  c.innerHTML = `
+  <div style="margin-bottom:20px;">
+    <div class="ledger-title" style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px;">💾 Backup & Restore</div>
+    <div class="ledger-subtitle">Export your records or restore from a previous backup</div>
+  </div>
+  <div class="backup-grid">
+    <div class="backup-card">
+      <div class="icon">⬇</div>
+      <h3>Export Backup</h3>
+      <p>Download all records as a JSON backup file you can restore later.</p>
+      <button class="btn primary" onclick="exportJSON()">Export JSON</button>
+    </div>
+    <div class="backup-card">
+      <div class="icon">⬆</div>
+      <h3>Import Backup</h3>
+      <p>Restore records from a previously exported JSON backup file.</p>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(this)"/>
+      <button class="btn gold" onclick="document.getElementById('import-file').click()">Import JSON</button>
+    </div>
+    <div class="backup-card">
+      <div class="icon">📊</div>
+      <h3>Export CSV</h3>
+      <p>Download all records as a spreadsheet-ready CSV file.</p>
+      <button class="btn" onclick="exportCSV()">Export CSV</button>
+    </div>
+    <div class="backup-card" style="border-left:3px solid var(--danger);">
+      <div class="icon">🗑</div>
+      <h3>Clear All Records</h3>
+      <p>Permanently delete all records. This cannot be undone.</p>
+      <button class="btn danger" onclick="clearAll()">Clear Database</button>
+    </div>
+  </div>`;
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dcam_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('Backup exported');
+}
+function importJSON(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data)) throw new Error('Invalid format');
+      records = data;
+      save();
+      applyFilter();
+      showView('ledger');
+      toast(`${records.length} records imported`);
+    } catch(err) { toast('Import failed — invalid file'); }
+  };
+  reader.readAsText(file);
+}
+function exportCSV() {
+  const cols = ['regno','name','doctype','date','status','notes'];
+  const header = ['Regiment No','Full Name','Document Type','Date','Status','Notes'];
+  const rows = records.map(r => cols.map(c => `"${(r[c]||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [header.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dcam_export_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('CSV exported');
+}
+function clearAll() {
+  if(!confirm('Delete ALL records? This cannot be undone.')) return;
+  records = [];
+  save();
+  applyFilter();
+  showView('ledger');
+  toast('Database cleared');
+}
+
+// ── MODAL ──
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('show'); });
+});
+
+// ── TOAST ──
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+load();
+showView('ledger');
+</script>
+</body>
+</html>
